@@ -1,0 +1,44 @@
+{
+    "id": "lobby",
+    "name": "Lobby",
+    "description": "You are standing facing North in a fair sized lobby. Little light makes it's way through the heavily dust-coated windows and you can pick up a faint musty smell in the air. Ahead of you is a heavy looking door, crossed with black metal hinges. On the eastern wall hangs a large portrait that seems to have been incredibly sun faded, and the subject's face has been burned out of the painting. Beneath the portrait is a small sideboard with two drawers spanning the width of it horizontally in the top section. The lower section looks as though it may have once held wines and other beverages.",
+
+    
+    "walls": [
+        {
+            "direction": "north",
+            "description": "The bottom third of the north wall is clad with wooden panelling, with the top two thirds being bare plaster with faint hints of ripped wallpaper that used to hang there. In the centre of the wall's left half hangs a large portrait, with a small golden coloured plaque beneath and in the centre of the wall's right half is a heavy looking door, crossed with black metal hinges. The door is slightly ajar, and you can hear a faint sound of a a liquid dripping every few seconds from beyond.",
+            "items": [ "lobby_portrait" ]
+        },
+        {
+            "direction": "east",
+            "description": "The eastern wall is completely bare plaster, without trace of anything prior hanging or residing there. You can just about make out 5 faint scratches in the plaster near the top of the wall, all parralel to one another, but slightly differing in length.",
+            "items": []
+        },
+        {
+            "direction": "south",
+            "description": "The south wall is clad with wooden panelling, with the top two thirds being covered with a very worn wallpaper, attempting to show off deep red and black vertical stripes through what seems like years worth of dust and sun-damage. Slightly left of the walls centre, there is a small pendulum wall clock, frozen at 3:33am.",
+            "items": [ "lobby_clock" ]
+        },
+        {
+            "direction": "west",
+            "description": "The western wall - much like the eastern wall - is completely bare plaster, though this wall has obvious signs of previously hung items.",
+            "items": []
+        }
+    ],
+
+    "floor": {
+        "description": "The floor of the room is large stone tile that seems to sap all the warmth that may have been in the room. In the centre of the floor is a small Worn Journal; its bottom right edge looking as though someone had tried to burn it without success.",
+        "items": [ "lobby_journal" ] 
+    },
+
+    "furniture": [ "sideboard" ],
+
+    "exits": [
+        {
+            "direction": "north",
+            "leadsTo": "kitchen",
+            "locked": false
+        }
+    ]
+}
