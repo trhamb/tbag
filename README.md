@@ -1,2 +1,1 @@
-# tbag
-Accessible Text Based Adventure Game
+# Accessible Text Based Adventure Game
