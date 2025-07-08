@@ -1,7 +1,7 @@
 {
     "id": "lobby",
     "name": "Lobby",
-    "description": "You are standing facing North in a fair sized lobby. Little light makes it's way through the heavily dust-coated windows and you can pick up a faint musty smell in the air. Ahead of you is a heavy looking door, crossed with black metal hinges. On the eastern wall hangs a large portrait that seems to have been incredibly sun faded, and the subject's face has been burned out of the painting. Beneath the portrait is a small sideboard with two drawers spanning the width of it horizontally in the top section. The lower section looks as though it may have once held wines and other beverages.",
+    "description": "You are standing facing North in a fair sized lobby. Little light makes it's way through the heavily dust-coated windows and you can pick up a faint musty smell in the air. Ahead of you is a heavy looking door, crossed with black metal hinges. On the Northern wall's left half hangs a large portrait. Beneath the portrait is a small sideboard.",
 
     
     "walls": [
@@ -32,7 +32,7 @@
         "items": [ "lobby_journal" ] 
     },
 
-    "furniture": [ "sideboard" ],
+    "furniture": [ "lobby_sideboard" ],
 
     "exits": [
         {

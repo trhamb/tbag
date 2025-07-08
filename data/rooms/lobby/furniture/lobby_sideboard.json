@@ -1,0 +1,21 @@
+{
+    "id": "lobby_sideboard",
+    "name": "Sideboard",
+    "description": "A small sideboard, brandishing the battle-scars of long-term use. Made of some sort of incredibly hard looking dark wood, it's top section contains two drawers, spanning the width of the board horizontally. The lower section looks as though it may have once held wines and other beverages, but currently sits empty.",
+    "storage": [
+        {
+            "id": "lobby_sideboard_left_drawers",
+            "name": "Left Drawer",
+            "canOpen": true,
+            "isOpen": false,
+            "items": []
+        },
+        {
+            "id": "lobby_sideboard_right_drawers",
+            "name": "Right Drawer",
+            "canOpen": true,
+            "isOpen": false,
+            "items": [ "lobby_paper_scrap" ]
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "id": "lobby_journal",
+    "name": "Worn Journal",
+    "description": "A small pocket sized journal, bound with a dull grey leather showing no writing or inscriptions on the front. It doesn't look too old, but you can tell it's been heavily used. It's bottom right edge looks as though someone has attempted to burn the book, but failed as it doesn't look like the flame went very far.",
+    "canTake": true
+}

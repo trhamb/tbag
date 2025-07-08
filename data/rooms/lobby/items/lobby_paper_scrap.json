@@ -1,0 +1,6 @@
+{
+    "id": "lobby_paper_scrap",
+    "name": "Paper Scrap",
+    "description": "A small crumpled peice of paper, with a small amount of writing on it. It's not very clear, but you can make out a scribble of the word 'Lilith' and the number '1834'.",
+    "canTake": true
+}
