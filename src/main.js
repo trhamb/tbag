@@ -116,13 +116,15 @@ async function renderRoom() {
 
     // Show furniture
     if (currentRoom.furniture && currentRoom.furniture.length > 0) {
-        print('You see: ' + currentRoom.furniture.join(', '));
+        const furnitureNames = await getFurnitureNames(currentRoom.furniture);
+        print('You see: ' + furnitureNames.join(', '));
     }
 
-    // Show items on the floor (from state)
+    // Show items on the floor
     const state = roomsState[currentRoomId];
     if (state.floorItems && state.floorItems.length > 0) {
-        print('On the floor: ' + state.floorItems.join(', '));
+        const itemNames = await getItemNames(state.floorItems);
+        print('On the floor: ' + itemNames.join(', '));
     }
 
     // Show exits

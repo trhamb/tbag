@@ -7,7 +7,7 @@
     "walls": [
         {
             "direction": "north",
-            "description": "The bottom third of the north wall is clad with wooden panelling, with the top two thirds being bare plaster with faint hints of ripped wallpaper that used to hang there. In the centre of the wall's left half hangs a large portrait, with a small golden coloured plaque beneath and in the centre of the wall's right half is a heavy looking door, crossed with black metal hinges. The door is slightly ajar, and you can hear the faint sound of a liquid dripping every few seconds from beyond.",
+            "description": "The bottom third of the north wall is clad with vertical wooden panelling, with the top two thirds being bare plaster with faint hints of ripped wallpaper that used to hang there. In the centre of the wall's left half hangs a large portrait, and in the centre of the wall's right half is a heavy looking door, crossed with black metal hinges. The door is slightly ajar, and you can hear the faint sound of a liquid dripping every few seconds from beyond.",
             "items": [ "lobby_portrait" ]
         },
         {

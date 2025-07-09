@@ -1,5 +1,6 @@
 body { 
     font-family: monospace; 
+    font-size: 1.5em;
     background: #222; 
     color: #eee; 
     margin: 0; 
@@ -13,9 +14,9 @@ body {
 
 #game-container { 
     width: 60%;
-    height: 60%;
+    height: 80%;
     margin: 40px auto; 
-    padding: 20px; 
+    padding: 20px 40px; 
     background: #333; 
     border-radius: 8px; 
     display: flex;
@@ -32,6 +33,10 @@ body {
     height: 100%;     
     overflow-y: auto;     
     box-sizing: border-box; 
+}
+
+#output div {
+    margin-bottom: 10px;
 }
 
 #input-form { 
@@ -68,5 +73,6 @@ body {
 
 .player-input {
     color: orange;
-    margin: 5px 0;
+    margin: 10px 0;
+    font-style: italic;
 }

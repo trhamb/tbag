@@ -35,6 +35,12 @@ export async function findObjectsByName(name, gameContext) {
             exactMatches.push({ type, id, data: obj, parent });
         } else if (objName.includes(name)) {
             partialMatches.push({ type, id, data: obj, parent });
+        } else {
+            // NEW: Flexible word match
+            const inputWords = name.split(' ').filter(Boolean);
+            if (inputWords.every(word => objName.includes(word))) {
+                partialMatches.push({ type, id, data: obj, parent });
+            }
         }
     }
 
@@ -56,6 +62,25 @@ export async function findObjectsByName(name, gameContext) {
             if (furnData.storage) {
                 for (const storageObj of furnData.storage) {
                     checkMatch(storageObj, storageObj.id, 'storage', furnData.name);
+                }
+            }
+        }
+    }
+
+    // Check items inside open storage (drawers, cabinets, etc.)
+    for (const furnId of gameContext.currentRoom.furniture) {
+        const furnState = gameContext.roomsState[gameContext.currentRoomId].furniture[furnId];
+        if (furnState && furnState.storage) {
+            for (const storageId of Object.keys(furnState.storage)) {
+                const storageState = furnState.storage[storageId];
+                if (storageState.isOpen && storageState.items) {
+                    for (const itemId of storageState.items) {
+                        const response = await fetch(`../data/rooms/${gameContext.currentRoomId}/items/${itemId}.json`);
+                        if (response.ok) {
+                            const itemData = await response.json();
+                            checkMatch(itemData, itemId, 'item', storageState.name || "storage");
+                        }
+                    }
                 }
             }
         }
@@ -188,7 +213,10 @@ async function openStorage(target, context) {
             storageState.isOpen = true;
             context.print(`You open the ${storage.data.name}.`);
             if (storageState.items && storageState.items.length > 0) {
-                context.print(`Inside you see: ${storageState.items.join(', ')}`);
+                // Use getItemNames to get human-readable names
+                context.getItemNames(storageState.items).then(itemNames => {
+                    context.print(`Inside you see: ${itemNames.join(', ')}`);
+                });
             } else {
                 context.print("It's empty.");
             }
@@ -199,8 +227,78 @@ async function openStorage(target, context) {
     }
 }
 
-function takeItem(target, gameContext) {
-    gameContext.print('Take Itemy Witemy');
+async function takeItem(target, context) {
+    const matches = await findObjectsByName(target, context);
+
+    if (matches.length === 0) {
+        context.print("You don't see that here.");
+        return;
+    } else if (matches.length > 1) {
+        const options = matches.map(m => m.parent ? `${m.parent} ${m.data.name}` : m.data.name);
+        context.print(`Which do you mean? ${options.join(' or ')}`);
+        return;
+    }
+
+    const match = matches[0];
+
+    // Only allow taking items
+    if (match.type !== 'item') {
+        context.print("You can't take that.");
+        return;
+    }
+
+    // Load item JSON to check canTake
+    const response = await fetch(`../data/rooms/${context.currentRoomId}/items/${match.id}.json`);
+    if (!response.ok) {
+        context.print("You can't take that.");
+        return;
+    }
+    const itemData = await response.json();
+    if (itemData.canTake === false) {
+        context.print("You can't take that.");
+        return;
+    }
+
+    // Remove from floor, wall, or storage
+    let removed = false;
+    // 1. Floor
+    const floorItems = context.roomsState[context.currentRoomId].floorItems;
+    const floorIdx = floorItems.indexOf(match.id);
+    if (floorIdx !== -1) {
+        floorItems.splice(floorIdx, 1);
+        removed = true;
+    }
+    // 2. Wall items
+    for (const wall of context.currentRoom.walls || []) {
+        const wallItems = wall.items || [];
+        const wallIdx = wallItems.indexOf(match.id);
+        if (wallIdx !== -1) {
+            wallItems.splice(wallIdx, 1);
+            removed = true;
+        }
+    }
+    // 3. Storage (drawers, cabinets)
+    for (const furnId of Object.keys(context.roomsState[context.currentRoomId].furniture)) {
+        const furnState = context.roomsState[context.currentRoomId].furniture[furnId];
+        if (furnState.storage) {
+            for (const storageId of Object.keys(furnState.storage)) {
+                const storageItems = furnState.storage[storageId].items;
+                const storageIdx = storageItems.indexOf(match.id);
+                if (storageIdx !== -1 && furnState.storage[storageId].isOpen) {
+                    storageItems.splice(storageIdx, 1);
+                    removed = true;
+                }
+            }
+        }
+    }
+
+    if (removed) {
+        context.inventory.push(match.id);
+        context.print(`You take the ${itemData.name}.`);
+        context.renderRoom && context.renderRoom();
+    } else {
+        context.print("You can't take that right now.");
+    }
 }
 
 function useItem(target, gameContext) {

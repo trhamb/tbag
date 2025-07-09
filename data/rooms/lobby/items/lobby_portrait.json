@@ -1,5 +1,6 @@
 {
     "id": "lobby_portrait",
     "name": "Portrait Painting",
-    "description": "A large portrait that seems to have been incredibly sun faded, and the subject's face has been burned out of the painting."
+    "description": "A large portrait that seems to have been incredibly sun faded, and the subject's face has been burned out of the painting.",
+    "canTake": false
 }
