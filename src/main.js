@@ -17,8 +17,11 @@ const inputForm = document.getElementById('input-form');
 const commandInput = document.getElementById('command-input');
 
 // Print text to Output Area
-function print(text) {
-    outputDiv.textContent += text + '\n\n';
+function print(text, className = "game-output") {
+    const div = document.createElement('div');
+    div.textContent = text;
+    div.className = className;
+    outputDiv.appendChild(div);
     outputDiv.scrollTop = outputDiv.scrollHeight;
 }
 
@@ -134,7 +137,7 @@ inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const command = commandInput.value.trim().toLowerCase();
     if (command ) {
-        print('> ' + command);
+        print('> ' + command, 'player-input');
         handleCommand(command, {
             print,
             inventory,

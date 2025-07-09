@@ -67,8 +67,55 @@ export async function findObjectsByName(name, gameContext) {
             const response = await fetch(`../data/rooms/${gameContext.currentRoomId}/items/${itemId}.json`);
             if (response.ok) {
                 const itemData = await response.json();
-                // Use the same matching logic as above
                 checkMatch(itemData, itemId, 'item', `on the ${wall.direction} wall`);
+            }
+        }
+    }
+
+    // 4. Check for floor
+    if (["floor", "the floor"].includes(name)) {
+        if (gameContext.currentRoom.floor) {
+            checkMatch(
+                { name: "Floor", description: gameContext.currentRoom.floor.description },
+                "floor",
+                "floor"
+            );
+        }
+    }
+
+    // 5. Check for walls (all or by direction)
+    const wallKeywords = ["wall", "walls"];
+    const wallDirections = ["north", "south", "east", "west"];
+
+    if (wallKeywords.includes(name)) {
+        for (const wall of gameContext.currentRoom.walls || []) {
+            checkMatch(
+                { name: `${wall.direction.charAt(0).toUpperCase() + wall.direction.slice(1)} Wall`, description: wall.description },
+                wall.direction,
+                "wall"
+            );
+        }
+    } else if (wallDirections.includes(name)) {
+        const wall = (gameContext.currentRoom.walls || []).find(w => w.direction === name);
+        if (wall) {
+            checkMatch(
+                { name: `${wall.direction.charAt(0).toUpperCase() + wall.direction.slice(1)} Wall`, description: wall.description },
+                wall.direction,
+                "wall"
+            );
+        }
+    } else {
+        // NEW: Check for "[direction] wall"
+        for (const dir of wallDirections) {
+            if (name === `${dir} wall`) {
+                const wall = (gameContext.currentRoom.walls || []).find(w => w.direction === dir);
+                if (wall) {
+                    checkMatch(
+                        { name: `${wall.direction.charAt(0).toUpperCase() + wall.direction.slice(1)} Wall`, description: wall.description },
+                        wall.direction,
+                        "wall"
+                    );
+                }
             }
         }
     }

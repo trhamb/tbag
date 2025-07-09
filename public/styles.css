@@ -29,6 +29,9 @@ body {
     white-space: pre-wrap; 
     text-align: left;
     width: 100%;
+    height: 100%;     
+    overflow-y: auto;     
+    box-sizing: border-box; 
 }
 
 #input-form { 
@@ -57,4 +60,13 @@ body {
 
 #submit-btn:hover { 
     background: #666; 
+}
+
+.game-output {
+    color: #64ff45;
+}
+
+.player-input {
+    color: orange;
+    margin: 5px 0;
 }

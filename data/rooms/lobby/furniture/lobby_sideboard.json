@@ -6,6 +6,7 @@
         {
             "id": "lobby_sideboard_left_drawers",
             "name": "Left Drawer",
+            
             "canOpen": true,
             "isOpen": false,
             "items": []

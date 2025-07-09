@@ -6,13 +6,16 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+
   <div id="game-container">
-    <div id="output"></div>
+    <div id="output" role="log" aria-live="polite"></div>
     <form id="input-form" autocomplete="off">
       <input id="command-input" type="text" placeholder="Type a command..." autofocus />
       <button id="submit-btn" type="submit">Go</button>
     </form>
   </div>
-  <script type="module"src="../src/main.js"></script>
+
+  <script type="module" src="../src/main.js"></script>
+
 </body>
 </html>
