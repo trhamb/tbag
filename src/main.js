@@ -16,6 +16,111 @@ const outputDiv = document.getElementById('output');
 const inputForm = document.getElementById('input-form');
 const commandInput = document.getElementById('command-input');
 
+// Track input for TTS
+let lastInputValue = '';
+
+// TTS Queue system
+let ttsQueue = [];
+let isSpeaking = false;
+let currentSpeechId = null;
+let queuePaused = false;
+
+function speakQueued(text) {
+    if (!window.responsiveVoice || typeof window.responsiveVoice.speak !== 'function') {
+        return;
+    }
+    
+    ttsQueue.push(text);
+    
+    if (!isSpeaking && !queuePaused) {
+        speakNext();
+    }
+}
+
+function speakNext() {
+    if (ttsQueue.length === 0 || queuePaused) {
+        isSpeaking = false;
+        currentSpeechId = null;
+        return;
+    }
+    
+    isSpeaking = true;
+    const text = ttsQueue.shift();
+    
+    console.log('Speaking queued text:', text);
+    
+    currentSpeechId = window.responsiveVoice.speak(text, "UK English Male", {
+        rate: 0.9,
+        pitch: 1.0,
+        volume: 1.0,
+        onend: () => {
+            // Wait a bit before speaking the next item
+            setTimeout(speakNext, 300);
+        },
+        onerror: () => {
+            // If there's an error, continue with next item
+            setTimeout(speakNext, 300);
+        }
+    });
+}
+
+// Function to handle interruption and clear queue
+function handleInterruption() {
+    console.log('handleInterruption called:', {
+        isSpeaking,
+        currentSpeechId,
+        queueLength: ttsQueue.length
+    });
+    
+    if (isSpeaking || ttsQueue.length > 0) {
+        console.log('Speech interrupted, clearing queue...');
+        // Stop current speech
+        window.responsiveVoice.cancel();
+        // Clear the entire queue
+        ttsQueue = [];
+        queuePaused = false;
+        isSpeaking = false;
+        currentSpeechId = null;
+        console.log('Queue cleared, state reset');
+    }
+}
+
+// Add input event listener for word reading on space
+commandInput.addEventListener('input', (e) => {
+    const currentText = e.target.value;
+    
+    console.log('Input event:', {
+        currentText,
+        lastInputValue,
+        isSpeaking,
+        queueLength: ttsQueue.length
+    });
+    
+    // Check if a space was just added
+    if (currentText.length > lastInputValue.length && currentText.endsWith(' ')) {
+        // A space was just added, read the word that was completed
+        const completedWord = lastInputValue.split(' ').pop();
+        if (completedWord && window.responsiveVoice) {
+            window.responsiveVoice.speak(completedWord, "UK English Male", {
+                rate: 1.0,
+                pitch: 1.0,
+                volume: 0.8
+            });
+        }
+    } else if (currentText.length > lastInputValue.length) {
+        // User is typing new characters, interrupt narration if it's playing
+        console.log('User typing, checking for interruption...');
+        if (isSpeaking || ttsQueue.length > 0) {
+            console.log('Interrupting narration...');
+            handleInterruption();
+        }
+    }
+    
+    lastInputValue = currentText;
+});
+
+
+
 // Print text to Output Area
 function print(text, className = "game-output") {
     const div = document.createElement('div');
@@ -23,6 +128,11 @@ function print(text, className = "game-output") {
     div.className = className;
     outputDiv.appendChild(div);
     outputDiv.scrollTop = outputDiv.scrollHeight;
+    
+    // TTS: Speak the text (skip player input and separator lines)
+    if (className !== "player-input" && text.trim() !== "---" && text.trim() !== "") {
+        speakQueued(text);
+    }
 }
 
 // Load Room JSON and display info
@@ -150,11 +260,24 @@ inputForm.addEventListener('submit', (e) => {
             getItemNames,
             loadRoom,
             renderRoom
-        })
+        });
         commandInput.value = '';
     }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-    loadRoom(INITIAL_ROOM_PATH);
+    // Wait for ResponsiveVoice to be ready
+    const checkResponsiveVoice = () => {
+        console.log('Checking ResponsiveVoice:', window.responsiveVoice);
+        if (window.responsiveVoice && typeof window.responsiveVoice.speak === 'function') {
+            console.log('ResponsiveVoice is ready, loading room...');
+            loadRoom(INITIAL_ROOM_PATH);
+        } else {
+            console.log('ResponsiveVoice not ready yet, retrying...');
+            setTimeout(checkResponsiveVoice, 200);
+        }
+    };
+    
+    // Start checking after a short delay to ensure script is loaded
+    setTimeout(checkResponsiveVoice, 500);
 });

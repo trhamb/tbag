@@ -31,15 +31,41 @@ export async function findObjectsByName(name, gameContext) {
     // Helper to check and add matches
     function checkMatch(obj, id, type, parent) {
         const objName = obj.name.toLowerCase();
-        if (objName === name) {
+        const normalizedName = name.toLowerCase();
+        
+        // Exact match
+        if (objName === normalizedName) {
             exactMatches.push({ type, id, data: obj, parent });
-        } else if (objName.includes(name)) {
+        } 
+        // Direct substring match
+        else if (objName.includes(normalizedName)) {
             partialMatches.push({ type, id, data: obj, parent });
-        } else {
-            // NEW: Flexible word match
-            const inputWords = name.split(' ').filter(Boolean);
-            if (inputWords.every(word => objName.includes(word))) {
+        }
+        // Reverse substring match (input contains object name)
+        else if (normalizedName.includes(objName)) {
+            partialMatches.push({ type, id, data: obj, parent });
+        }
+        // Handle plurals and common variations
+        else {
+            // Remove common plural endings and try again
+            const singularName = normalizedName.replace(/s$/, '');
+            const singularObjName = objName.replace(/s$/, '');
+            
+            if (singularName === singularObjName || 
+                objName.includes(singularName) || 
+                singularName.includes(singularObjName)) {
                 partialMatches.push({ type, id, data: obj, parent });
+            }
+            // Flexible word match for multi-word objects
+            else {
+                const inputWords = normalizedName.split(' ').filter(Boolean);
+                const objWords = objName.split(' ').filter(Boolean);
+                
+                // Check if all input words are found in object name
+                if (inputWords.every(word => objWords.some(objWord => 
+                    objWord.includes(word) || word.includes(objWord)))) {
+                    partialMatches.push({ type, id, data: obj, parent });
+                }
             }
         }
     }
@@ -156,7 +182,30 @@ async function examine(target, gameContext) {
     if (matches.length === 0) {
         gameContext.print("You don't see that here.");
     } else if (matches.length === 1) {
-        gameContext.print(matches[0].data.description);
+        const match = matches[0];
+        let description = match.data.description;
+        
+        // For storage objects, use appropriate description based on state
+        if (match.type === 'storage') {
+            // Find the storage state to check if it's open
+            let isOpen = false;
+            for (const furnId of Object.keys(gameContext.roomsState[gameContext.currentRoomId].furniture)) {
+                const furnState = gameContext.roomsState[gameContext.currentRoomId].furniture[furnId];
+                if (furnState.storage && furnState.storage[match.id]) {
+                    isOpen = furnState.storage[match.id].isOpen;
+                    break;
+                }
+            }
+            
+            // Use interior description if open, exterior if closed
+            if (isOpen && match.data.interiorDescription) {
+                description = match.data.interiorDescription;
+            } else if (!isOpen && match.data.exteriorDescription) {
+                description = match.data.exteriorDescription;
+            }
+        }
+        
+        gameContext.print(description);
     } else {
         // Multiple matches: prompt for clarification
         const options = matches.map(m => m.parent ? `${m.parent} ${m.data.name}` : m.data.name);
@@ -214,9 +263,8 @@ async function openStorage(target, context) {
             context.print(`You open the ${storage.data.name}.`);
             if (storageState.items && storageState.items.length > 0) {
                 // Use getItemNames to get human-readable names
-                context.getItemNames(storageState.items).then(itemNames => {
-                    context.print(`Inside you see: ${itemNames.join(', ')}`);
-                });
+                const itemNames = await context.getItemNames(storageState.items);
+                context.print(`Inside you see: ${itemNames.join(', ')}`);
             } else {
                 context.print("It's empty.");
             }
@@ -295,7 +343,6 @@ async function takeItem(target, context) {
     if (removed) {
         context.inventory.push(match.id);
         context.print(`You take the ${itemData.name}.`);
-        context.renderRoom && context.renderRoom();
     } else {
         context.print("You can't take that right now.");
     }

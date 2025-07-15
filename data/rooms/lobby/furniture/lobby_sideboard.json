@@ -6,7 +6,8 @@
         {
             "id": "lobby_sideboard_left_drawers",
             "name": "Left Drawer",
-            
+            "exteriorDescription": "A wooden drawer on the left side of the sideboard. It appears to be unused, with a pristine brass handle that shows no signs of wear.",
+            "interiorDescription": "The drawer is empty and unused, with a thin layer of dust coating its interior.",
             "canOpen": true,
             "isOpen": false,
             "items": []
@@ -14,6 +15,8 @@
         {
             "id": "lobby_sideboard_right_drawers",
             "name": "Right Drawer",
+            "exteriorDescription": "A wooden drawer on the right side of the sideboard. Its front shows signs of frequent use, with the brass handle slightly tarnished from regular handling.",
+            "interiorDescription": "The drawer interior is fairly clean, aside from faint grubby marks on the sides from hands brushing against it.",
             "canOpen": true,
             "isOpen": false,
             "items": [ "lobby_paper_scrap" ]
